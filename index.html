@@ -1,1 +1,243 @@
-hello world
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.5, minimum-scale=1.5, maximum-scale=1.5"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<link rel="apple-touch-startup-image" href="pal.ico" />
+	<link rel="apple-touch-icon" href="pal.ico"/>
+
+	<title>仙剑奇侠传</title>
+	<style>
+
+body {
+	width: 320px;
+	height: 200px;
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+img {
+	float: left;
+}
+.m {
+	position:relative;
+	top: 8px;
+}
+.n {
+	position: absolute;
+	margin-left: 16px;
+}
+
+canvas {position: absolute;}
+
+#map {display:none}		/** off sceen **/
+#map {height: 100px;overflow-y: scroll}		/** off sceen **/
+
+
+/* other   */
+#debug {position: absolute; right: 0; border: 1px solid #CCC; width: 400px; height: 300px;}
+
+canvas {zoom: 2}
+
+@media screen and (max-device-width: 480px) {
+	canvas	{zoom: 1;}
+	#debug {right: auto;}
+	#console {display:none;}
+	#input {display:none;}
+}
+
+	</style>
+</head>
+<body>
+
+<script>var TRACE = false; </script>
+<script>var DEBUG = location.search && location.search.indexOf('debug') != -1; </script>
+
+
+<div id="debug" style="display:none">
+	<div id="console"></div>
+	<div id="input">
+		<input type="text" placeholder="sceneId" value="" onchange="javascript:nextSceneId=this.value;toggleScene();"><br/>
+		<input type="text" placeholder="mx" value="" onchange="javascript:setRolePos(this.value, my, mhalf);"><br/>
+		<input type="text" placeholder="my" value="" onchange="javascript:setRolePos(mx, this.value, mhalf);"><br/>
+		<input type="button" value="stop" onchange="javascript:for(n in Npcs){Npcs[n].stop();}update();"><br/>
+	</div>
+</div>
+<!--虽然宽高为640.400, 但实际 320x200的放大版-->
+
+<canvas id="map" width="2048" height="2048"></canvas>
+<canvas id="back" width="320" height="200"></canvas>
+<canvas id="canvas" width="320" height="200"></canvas>
+<canvas id="front" width="320" height="200"></canvas>
+<canvas id="temp" width="320" height="200"></canvas>
+<canvas id="talk" width="320" height="200"></canvas>
+
+<canvas id="startup" width="320" height="200"></canvas>
+
+
+<div id="info"></div>
+
+
+
+<!-- Lang, Hex, ByteArray, ByteView, Canvas 这些通用的方法-->
+<script src="util-lang.js"></script>
+<script src="util-hex.js"></script>
+<script src="util-view.js"></script>
+<script src="util-deyj.js"></script>
+<script src="util-canvas.js"></script>
+
+
+<!-- Game 之 init, resource, anim, script-->
+<script src="resource-queue.js"></script>
+<script src="resource-loader.js"></script>
+<script src="resource-pal.js"></script>
+
+<script src="init.js"></script>
+<script src="core-thread.js"></script>
+<script src="core-anim.js"></script>
+<script src="core-timer.js"></script>
+
+
+<!-- Game 之 engine -->
+<script src="core-script.js"></script>
+
+<script>
+
+	//写入全局中, 方便调试
+	window.hex = Hex.toHex2;
+	window.toHex = Hex.toHex2;
+	window.toHex4 = Hex.toHex4;
+
+	function println(str) {
+		//document.write(str + '<br/>')
+		D.get('#console').innerHTML += str + '<br/>';
+	}
+
+	//用在draw.js中
+	var context = document.getElementById('canvas').getContext('2d');
+	var backContext = document.getElementById('back').getContext('2d');
+	var mapContext = document.getElementById('map').getContext('2d');
+	var frontContext = document.getElementById('front').getContext('2d');
+	var tempContext = document.getElementById('temp').getContext('2d');
+
+	//用在talk.js中
+	var talkContext = document.getElementById('talk').getContext('2d');
+	var startupContext = document.getElementById('startup').getContext('2d');
+	//context.translate(-300, -200);
+
+	//context.scale(1, 1);		//320x200  640x400  960x600
+	//context.scale(1366/640, 768/400);
+
+	//context.fillStyle = '#000000';
+	//context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+
+
+</script>
+
+<!-- Game 之 UI, input -->
+<script src="draw-talk.js"></script>
+<script src="draw-draw.js"></script>
+<script src="draw-keypress.js"></script>
+
+
+<!-- Game 之 API -->
+<script src="command.js"></script>
+<script src="ui-draw.js"></script>
+<script src="ui-panel.js"></script>
+<script src="esc.js"></script>
+<script src="esc-ui.js"></script>
+<script src="esc-startup.js"></script>
+<script src="esc-menu.js"></script>
+<script src="esc-item.js"></script>
+
+<script>
+	/////////  启动  ///////////
+
+	ready(function() {
+
+		initEventObject();
+		initScript();
+		initScene();
+		initItem();
+		initDat();
+
+
+		if (!DEBUG) {
+			//drawFbp(0x3C);
+			//drawMenu(startupContext, "\x0b\x0c\x0d\x0e", 124, 96, 0xFFF8CC70);
+			//drawMenu(startupContext, "\x0f\x0c\x10\x11", 124, 114, 0xFFD4D0C0)
+
+			ESC.onStartup();
+
+		} else if (false) {
+			//enter scene 1
+			nextSceneId = 1;
+			toggleScene();
+		} else {
+			//enter scene 2
+			commonEnter();
+			
+			//nextSceneId = 3;
+
+			nextSceneId = 4;
+			setRolePos(36, 58, 0);			//3.	46.	设置pos: 41, 18
+
+
+			toggleScene();
+
+		}
+
+
+
+		//setInterval(drawCanvas, 1000 / frameCount);		//30帧/秒
+		//setInterval(drawLoop, 1000 / 3);					//30帧/秒
+
+	});
+
+	
+	//******  脚本引擎  ******/
+	function commonEnter() {
+
+		setRolePos(0x31, 0x5E, 0);			//3.	46.	设置pos: 41, 18
+		setRoleTile(0, 0x2, 0);				//4.	65. 设置形象00, C1
+		setRoleIndex(0, 0, 0);				//5.	15. 设置方向0
+		setRoleGroup(1);					//6.	75  分组
+	}
+
+
+//酒剑仙, 使用酒
+//Npc.startScript({trigScr:0x9aec},true)
+
+//to scene 4
+/*
+	setRolePos(35, 61, 0);
+	setRoleTile(0, 2, 0);
+	nextSceneId=4;
+	toggleScene();
+*/
+
+
+</script>
+
+
+
+
+<script src="tool-debug.js"></script>
+
+<!--
+<canvas id="PerformanceCanvas" width="1024" height="400"></canvas>
+<script src="tool-performance.js"></script>
+<script src="tool-performance-use.js"></script>
+-->
+
+
+</body>
+</html>
+
+
+
+
+
