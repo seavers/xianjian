@@ -16,38 +16,27 @@ Lang = {
 	},
 
 	//ajax load binary
-	ajaxByteArray : function(url, start, end, callback, asyn) {
+	ajaxByteArray : function(url, callback) {
 		var req = new XMLHttpRequest();
 		req.url = url;
 
-		asyn = callback ? true : false;
-		req.open('GET', base + url, asyn);  
+		req.open('GET', base + url, true);  
 		req.responseType = "arraybuffer";
 
 		//req.overrideMimeType('text/plain; charset=x-user-defined');
-		if (end) {
-			req.setRequestHeader('Range', 'bytes=' + start + '-' + (end-1));		//这里的end是指包含的
-		}
-		if (!callback) {
-			req.send(null);
-			var byteArray = new ByteArray(new Uint8Array(req.response));
-			return byteArray;
-
-		} else {
-			req.onreadystatechange = function (ev) {
-				if (req.readyState == 4) {
-					if(req.status == 200 || req.status == 206) {
-
-						var byteArray = new ByteArray(new Uint8Array(req.response));
-						callback && callback(byteArray, url);						//返回字节数组
-					} else {
-						alert('资源下载失败');
-					}
+		req.onreadystatechange = function (ev) {
+			if (req.readyState == 4) {
+				if(req.status == 200) {
+					var byteArray = new ByteArray(new Uint8Array(req.response));
+					callback && callback(byteArray, url);		//返回字节数组
+				} else {
+					alert('资源下载失败');
 				}
-			};
-			req.send(null);
-		}
-	}
+			}
+		};
+		req.send(null);
 
+		return req;
+	}
 };
 
