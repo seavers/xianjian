@@ -12,7 +12,7 @@
 		['fbp.mkf', 72],		//背景图
 
 		['map.mkf', 226],		//地图
-		['gop.mkf', 226, (location.hostname!='localhost')],		//图元
+		['gop.mkf', 226],		//图元
 		['mgo.mkf', 637],		//角色
 		['rgm.mkf', 92],		//头像
 		['m.msg', 0],			//对话数据
@@ -37,9 +37,8 @@
 		for(var i = 0; i < files.length; i++) {
 
 			(function(c) {
-				var end = files[c][2] ? files[c][1] * 4 : undefined;
 				queue.add(function() {
-					loadUrl(files[c][0], 0, end, function(byteArray, url) {
+					loadUrl(files[c][0], function(byteArray, url) {
 						save(url, byteArray);
 						queue.remove();
 					}, true);
@@ -66,23 +65,16 @@
 
 
 	//ajax load
-	function loadUrl(url, start, end, callback) {
+	function loadUrl(url, callback) {
 		
-		document.getElementById('info').innerHTML += '正在下载 : ' + url + ' ' + (start||'') + ' ' + (end||'') + '<br/>';
+		document.getElementById('info').innerHTML += '正在下载 : ' + url + '<br/>';
 		console.log('正在下载资源文件 : ' + url + ' ');
 
-		if (callback) {
-			Lang.ajaxByteArray(url, start, end, function(ret, url) {
-				//document.getElementById('info').innerHTML += '下载完成 (' + ret.length + ')';
-				console.log('下载完成 ' + url + '(' + ret.length + ')');
-				return callback && callback(ret, url);
-			});
-		} else {
-			var ret = Lang.ajaxByteArray(url, start, end);
+		Lang.ajaxByteArray(url, function(ret, url) {
 			//document.getElementById('info').innerHTML += '下载完成 (' + ret.length + ')';
 			console.log('下载完成 ' + url + '(' + ret.length + ')');
-			return ret;
-		}
+			return callback && callback(ret, url);
+		});
 	}
 	
 	/**************    load Mkf file  ***********/
@@ -95,15 +87,6 @@
 		var end = data.getInt(index * 4 + 4);
 			
 		//console.log('read mkf ' + (loadMkfCount++) + ' : ' + file + ' ' + index + ' -> ' + toHex4(start) + ' ' + toHex4(end));
-
-		if (data.length < end) {
-			var f = file_caches[file + '_' + index];
-			if (!f) {
-				f = loadUrl(file, start, end);
-				file_caches[file + '_' + index] = f;
-			}
-			return f;
-		}
 
 		if (end-start > 655360) {
 			//alert('overflow : ' + file + ' ' + index + ' ' + (end-start));
