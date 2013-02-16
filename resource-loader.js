@@ -41,7 +41,7 @@
 					loadUrl(files[c][0], function(byteArray, url) {
 						save(url, byteArray);
 						queue.remove();
-					}, true);
+					}, c);
 				});
 			})(i);
 		}
@@ -65,16 +65,19 @@
 
 
 	//ajax load
-	function loadUrl(url, callback) {
-		
-		document.getElementById('info').innerHTML += '正在下载 : ' + url + '<br/>';
+	function loadUrl(url, callback, id) {
+		var spanId = 'info-p' + id;
+		document.getElementById('info').innerHTML += '<li>正在下载 : ' + url + ' <span id="'+spanId+'">';
 		console.log('正在下载资源文件 : ' + url + ' ');
 
-		Lang.ajaxByteArray(url, function(ret, url) {
+		var ajax = Lang.ajaxByteArray(url, function(ret, url) {
 			//document.getElementById('info').innerHTML += '下载完成 (' + ret.length + ')';
 			console.log('下载完成 ' + url + '(' + ret.length + ')');
 			return callback && callback(ret, url);
 		});
+		ajax.addEventListener('progress', function(ev) {
+			document.getElementById(spanId).innerHTML = '(' + Math.ceil(ev.loaded/ev.total*10000) / 100 + '%)'
+		})
 	}
 	
 	/**************    load Mkf file  ***********/

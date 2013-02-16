@@ -35,6 +35,8 @@ Lang = {
 			}
 		};
 		req.send(null);
+
+		return req;
 	}
 };
 
