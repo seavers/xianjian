@@ -1,14 +1,14 @@
 <!doctype html>
 <html>
 <head>
-        <meta charset="gbk">
+	<meta charset="gbk">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.5, minimum-scale=1.5, maximum-scale=1.5"/>
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<link rel="apple-touch-startup-image" href="pal.ico" />
 	<link rel="apple-touch-icon" href="pal.ico"/>
 
-	<title>ä»™å‰‘å¥‡ä¾ ä¼ </title>
+	<title>ÏÉ½£ÆæÏÀ´«</title>
 	<style>
 
 body {
@@ -67,7 +67,7 @@ canvas {zoom: 2}
 		<input type="button" value="stop" onchange="javascript:for(n in Npcs){Npcs[n].stop();}update();"><br/>
 	</div>
 </div>
-<!--è™½ç„¶å®½é«˜ä¸º640.400, ä½†å®é™… 320x200çš„æ”¾å¤§ç‰ˆ-->
+<!--ËäÈ»¿í¸ßÎª640.400, µ«Êµ¼Ê 320x200µÄ·Å´ó°æ-->
 
 <canvas id="map" width="2048" height="2048"></canvas>
 <canvas id="back" width="320" height="200"></canvas>
@@ -83,7 +83,7 @@ canvas {zoom: 2}
 
 
 
-<!-- Lang, Hex, ByteArray, ByteView, Canvas è¿™äº›é€šç”¨çš„æ–¹æ³•-->
+<!-- Lang, Hex, ByteArray, ByteView, Canvas ÕâĞ©Í¨ÓÃµÄ·½·¨-->
 <script src="util-lang.js"></script>
 <script src="util-hex.js"></script>
 <script src="util-view.js"></script>
@@ -91,7 +91,7 @@ canvas {zoom: 2}
 <script src="util-canvas.js"></script>
 
 
-<!-- Game ä¹‹ init, resource, anim, script-->
+<!-- Game Ö® init, resource, anim, script-->
 <script src="resource-queue.js"></script>
 <script src="resource-loader.js"></script>
 <script src="resource-pal.js"></script>
@@ -102,12 +102,12 @@ canvas {zoom: 2}
 <script src="core-timer.js"></script>
 
 
-<!-- Game ä¹‹ engine -->
+<!-- Game Ö® engine -->
 <script src="core-script.js"></script>
 
 <script>
 
-	//å†™å…¥å…¨å±€ä¸­, æ–¹ä¾¿è°ƒè¯•
+	//Ğ´ÈëÈ«¾ÖÖĞ, ·½±ãµ÷ÊÔ
 	window.hex = Hex.toHex2;
 	window.toHex = Hex.toHex2;
 	window.toHex4 = Hex.toHex4;
@@ -117,14 +117,14 @@ canvas {zoom: 2}
 		D.get('#console').innerHTML += str + '<br/>';
 	}
 
-	//ç”¨åœ¨draw.jsä¸­
+	//ÓÃÔÚdraw.jsÖĞ
 	var context = document.getElementById('canvas').getContext('2d');
 	var backContext = document.getElementById('back').getContext('2d');
 	var mapContext = document.getElementById('map').getContext('2d');
 	var frontContext = document.getElementById('front').getContext('2d');
 	var tempContext = document.getElementById('temp').getContext('2d');
 
-	//ç”¨åœ¨talk.jsä¸­
+	//ÓÃÔÚtalk.jsÖĞ
 	var talkContext = document.getElementById('talk').getContext('2d');
 	var startupContext = document.getElementById('startup').getContext('2d');
 	//context.translate(-300, -200);
@@ -138,13 +138,13 @@ canvas {zoom: 2}
 
 </script>
 
-<!-- Game ä¹‹ UI, input -->
+<!-- Game Ö® UI, input -->
 <script src="draw-talk.js"></script>
 <script src="draw-draw.js"></script>
 <script src="draw-keypress.js"></script>
 
 
-<!-- Game ä¹‹ API -->
+<!-- Game Ö® API -->
 <script src="command.js"></script>
 <script src="ui-draw.js"></script>
 <script src="ui-panel.js"></script>
@@ -155,7 +155,7 @@ canvas {zoom: 2}
 <script src="esc-item.js"></script>
 
 <script>
-	/////////  å¯åŠ¨  ///////////
+	/////////  Æô¶¯  ///////////
 
 	ready(function() {
 
@@ -184,7 +184,7 @@ canvas {zoom: 2}
 			//nextSceneId = 3;
 
 			nextSceneId = 4;
-			setRolePos(36, 58, 0);			//3.	46.	è®¾ç½®pos: 41, 18
+			setRolePos(36, 58, 0);			//3.	46.	ÉèÖÃpos: 41, 18
 
 
 			toggleScene();
@@ -193,23 +193,23 @@ canvas {zoom: 2}
 
 
 
-		//setInterval(drawCanvas, 1000 / frameCount);		//30å¸§/ç§’
-		//setInterval(drawLoop, 1000 / 3);					//30å¸§/ç§’
+		//setInterval(drawCanvas, 1000 / frameCount);		//30Ö¡/Ãë
+		//setInterval(drawLoop, 1000 / 3);					//30Ö¡/Ãë
 
 	});
 
 	
-	//******  è„šæœ¬å¼•æ“  ******/
+	//******  ½Å±¾ÒıÇæ  ******/
 	function commonEnter() {
 
-		setRolePos(0x31, 0x5E, 0);			//3.	46.	è®¾ç½®pos: 41, 18
-		setRoleTile(0, 0x2, 0);				//4.	65. è®¾ç½®å½¢è±¡00, C1
-		setRoleIndex(0, 0, 0);				//5.	15. è®¾ç½®æ–¹å‘0
-		setRoleGroup(1);					//6.	75  åˆ†ç»„
+		setRolePos(0x31, 0x5E, 0);			//3.	46.	ÉèÖÃpos: 41, 18
+		setRoleTile(0, 0x2, 0);				//4.	65. ÉèÖÃĞÎÏó00, C1
+		setRoleIndex(0, 0, 0);				//5.	15. ÉèÖÃ·½Ïò0
+		setRoleGroup(1);					//6.	75  ·Ö×é
 	}
 
 
-//é…’å‰‘ä»™, ä½¿ç”¨é…’
+//¾Æ½£ÏÉ, Ê¹ÓÃ¾Æ
 //Npc.startScript({trigScr:0x9aec},true)
 
 //to scene 4
